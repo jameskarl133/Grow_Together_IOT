@@ -1,8 +1,10 @@
 # all the imports
 from fastapi import FastAPI
+from routes import router
 
 # creating a server with python FastAPI
 app = FastAPI()
+app.include_router(router)
 
 # hello world endpoint
 @app.get("/")
