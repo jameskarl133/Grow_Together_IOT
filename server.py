@@ -14,3 +14,7 @@ except:
     exit()
 
 farmer = db['farmer']
+crop = db['crop']
+crop_log = db ['crop_log']
+notification = db ['notification']
+schedule = db ['schedule']

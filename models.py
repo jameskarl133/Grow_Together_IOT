@@ -23,6 +23,18 @@ class Crop(BaseModel):
     crop_moisture:str
     crop_temp:str
     crop_status:str
+    crop_water_duration:str
     crop_created_at:str
     crop_updated_at:str
+
+class Crop_Log(BaseModel):
+    crop_date_planted:str
+    crop_date_harvested:str
+    crop_id:str
     
+class Notification(BaseModel):
+    user_id:str
+    crop_id:str
+
+class Schedule(BaseModel):
+    sched_time:str
