@@ -4,7 +4,7 @@ def farmer_serial(farmer) -> dict:
         "fname":str(farmer["fname"]),
         "mname":str(farmer["mname"]),
         "lname":str(farmer["lname"]),
-        "dob":str(farmer["type_field"]),
+        "field_type":str(farmer["field_type"]),
         "dob":str(farmer["dob"]),
         "email":str(farmer["email"]),
         "address":str(farmer["address"]),
