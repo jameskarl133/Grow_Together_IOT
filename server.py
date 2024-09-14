@@ -8,7 +8,7 @@ try:
     db = client["Grow_Together"]
     print('MongoDB Database connected')
 
-    
+
 except:
     print('MongoDB not connected')
     exit()
