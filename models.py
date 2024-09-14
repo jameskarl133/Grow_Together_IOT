@@ -14,3 +14,14 @@ class Farmer(BaseModel):
     created_at:str
     updated_at:str
     img:str
+
+class Crop(BaseModel):
+    crop_name:str
+    crop_image:str
+    crop_soil:str
+    crop_moisture:str
+    crop_temp:str
+    crop_status:str
+    crop_created_at:str
+    crop_updated_at:str
+    
