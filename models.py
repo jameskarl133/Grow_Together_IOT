@@ -12,9 +12,8 @@ class Farmer(BaseModel):
     username:str
     password:str
     status:str
-    created_at:str
-    updated_at:str
-    img:str
+    # created_at:str
+    # updated_at:str
 
 class Crop(BaseModel):
     crop_name:str
