@@ -29,10 +29,10 @@ def crop_serial(crop) -> dict:
         "crop_name":str(crop["name"]),
         "crop_image":str(crop["image"]),
         "crop_soil":str(crop["crop_soil"]),
+        "crop_soil_description": str(crop["crop_soil_description"]),
         "crop_moisture":str(crop["crop_moisture"]),
         "crop_temp":str(crop["crop_temp"]),
         "crop_status":str(crop["crop_status"]),
-        "crop_water_duration":str(crop["crop_water_duration"]),
         "crop_created_at":str(crop["crop_created_at"]),
         "crop_updated_at":str(crop["crop_updated_at"]),
         

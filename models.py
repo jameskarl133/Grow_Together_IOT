@@ -17,14 +17,14 @@ class Farmer(BaseModel):
 
 class Crop(BaseModel):
     crop_name:str
-    crop_image:str
+    # crop_image:str
     crop_soil:str
+    crop_soil_desc:str
     crop_moisture:str
     crop_temp:str
     crop_status:str
-    crop_water_duration:str
-    crop_created_at:str
-    crop_updated_at:str
+    # crop_created_at:str
+    # crop_updated_at:str
 
 class Crop_Log(BaseModel):
     crop_date_planted:str
