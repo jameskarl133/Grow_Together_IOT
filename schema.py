@@ -5,7 +5,7 @@ def farmer_serial(farmer) -> dict:
         "fname":str(farmer["fname"]),
         "mname":str(farmer["mname"]),
         "lname":str(farmer["lname"]),
-        "field_type":str(farmer["field_type"]),
+        # "field_type":str(farmer["field_type"]),
         "dob":str(farmer["dob"]),
         "email":str(farmer["email"]),
         "address":str(farmer["address"]),
@@ -13,9 +13,8 @@ def farmer_serial(farmer) -> dict:
         "username":str(farmer["username"]),
         "password":str(farmer["password"]),
         "status":str(farmer["status"]),
-        "created_at":str(farmer["created_at"]),
-        "updated_at":str(farmer["updated_at"]),
-        "img":str(farmer["img"]),
+        # "created_at":str(farmer["created_at"]),
+        # "updated_at":str(farmer["updated_at"]),
         
     }
 
