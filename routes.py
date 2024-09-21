@@ -11,7 +11,24 @@ from server import crop
 from server import crop_log
 from server import notification
 from server import schedule
+from fastapi import HTTPException
+from passlib.context import CryptContext 
+
 router = APIRouter()
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+@router.post("/login")
+async def login(username: str, password: str):
+    user = farmer.find_one({"username": username})
+    print(f"Retrieved user: {user}")
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    print(f"Input password: {password}, Stored hash: {user['password']}")
+    if not pwd_context.verify(password, user['password']):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    return {"message": "Login successful"}
 
 @router.get("/farmer")
 async def get_farmer():
