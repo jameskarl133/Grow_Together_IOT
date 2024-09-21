@@ -4,7 +4,7 @@ class Farmer(BaseModel):
     fname:str
     mname:str
     lname:str
-    field_type:str
+    # field_type:str
     dob:str
     email:str
     address:str
