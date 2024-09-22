@@ -3,7 +3,7 @@ from models import Crop
 from models import Crop_Log
 from models import Notification
 from models import Schedule
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from bson import ObjectId
 from schema import *
 from server import farmer
@@ -82,3 +82,14 @@ async def post_schedule(sched: Schedule):
     return{
         "code" : 200 if result else 204
     }
+
+@router.get("/crop/ondb")
+async def get_ondb_crops():
+    try:
+        # Filter crops that have the status "ondb"
+        crops = list(crop.find({"crop_status": "ondb"}))
+        serialized_crops = crop_list_serial(crops)  # Use the serialization function
+        return serialized_crops
+    except Exception as e:
+        print(f"Error occurred while fetching crops: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
