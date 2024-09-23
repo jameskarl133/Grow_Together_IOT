@@ -89,7 +89,18 @@ async def get_ondb_crops():
         # Filter crops that have the status "ondb"
         crops = list(crop.find({"crop_status": "ondb"}))
         serialized_crops = crop_list_serial(crops)  # Use the serialization function
-        return serialized_crops
+        return serialized_crops #like ang crop name ra ba
+    except Exception as e:
+        print(f"Error occurred while fetching crops: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+@router.get("/crop/planted")
+async def get_planted_crops():
+    try:
+        # Filter crops that have the status "planted"
+        crops = list(crop.find({"crop_status": "planted"}))
+        serialized_crops = crop_list_serial(crops)  # Use the serialization function
+        return serialized_crops  # Return only the crop names
     except Exception as e:
         print(f"Error occurred while fetching crops: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
