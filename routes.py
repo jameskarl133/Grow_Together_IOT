@@ -93,3 +93,62 @@ async def get_ondb_crops():
     except Exception as e:
         print(f"Error occurred while fetching crops: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+# @router.post("/farmer/login")
+# async def login_farmer(login_data: dict):
+#     try:
+#         username = login_data.get('username')
+#         password = login_data.get('password')
+        
+#         # Find farmer by username and password
+#         farmer_data = farmer.find_one({"username": username, "password": password})
+        
+#         if not farmer_data:
+#             raise HTTPException(status_code=401, detail="Invalid username or password")
+
+#         return {
+#             "code": 200,
+#             "message": "Login successful",
+#             "farmer": farmer_data
+#         }
+#     except Exception as e:
+#         print(f"Error occurred during login: {e}")
+#         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.get("/farmer/login")
+async def login_farmer(username: str, password: str):
+    try:
+        # Find farmer by username and password
+        farmer_data = farmer.find_one({"username": username, "password": password})
+        
+        if not farmer_data:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+
+        return {
+            "code": 200,
+            "message": "Login successful",
+            "farmer": farmer_data
+        }
+    except Exception as e:
+        print(f"Error occurred during login: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+# @router.get("/farmer/login")
+# async def login_farmer(username: str, password: str):
+#     try:
+#         # Find farmer by username and password
+#         farmer_data = farmer.find_one({"username": username, "password": password})
+        
+#         if not farmer_data:
+#             raise HTTPException(status_code=401, detail="Invalid username or password")
+
+#         return {
+#             "code": 200,
+#             "message": "Login successful",
+#             "farmer": farmer_data
+#         }
+#     except Exception as e:
+#         print(f"Error occurred during login: {e}")
+#         raise HTTPException(status_code=500, detail="Internal Server Error")
