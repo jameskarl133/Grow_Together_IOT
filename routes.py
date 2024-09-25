@@ -112,6 +112,7 @@ async def get_planted_crops():
             return []
         return crop_list_serial(crops)
     except Exception as e:
+<<<<<<< HEAD
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/crop/{crop_name}/planted")
@@ -124,3 +125,66 @@ async def update_crop_status(crop_name: str):
             raise HTTPException(status_code=404, detail="Crop not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+=======
+        print(f"Error occurred while fetching crops: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+# @router.post("/farmer/login")
+# async def login_farmer(login_data: dict):
+#     try:
+#         username = login_data.get('username')
+#         password = login_data.get('password')
+        
+#         # Find farmer by username and password
+#         farmer_data = farmer.find_one({"username": username, "password": password})
+        
+#         if not farmer_data:
+#             raise HTTPException(status_code=401, detail="Invalid username or password")
+
+#         return {
+#             "code": 200,
+#             "message": "Login successful",
+#             "farmer": farmer_data
+#         }
+#     except Exception as e:
+#         print(f"Error occurred during login: {e}")
+#         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+@router.get("/farmer/login")
+async def login_farmer(username: str, password: str):
+    try:
+        # Find farmer by username and password
+        farmer_data = farmer.find_one({"username": username, "password": password})
+        
+        if not farmer_data:
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+
+        return {
+            "code": 200,
+            "message": "Login successful",
+            "farmer": farmer_data
+        }
+    except Exception as e:
+        print(f"Error occurred during login: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+# @router.get("/farmer/login")
+# async def login_farmer(username: str, password: str):
+#     try:
+#         # Find farmer by username and password
+#         farmer_data = farmer.find_one({"username": username, "password": password})
+        
+#         if not farmer_data:
+#             raise HTTPException(status_code=401, detail="Invalid username or password")
+
+#         return {
+#             "code": 200,
+#             "message": "Login successful",
+#             "farmer": farmer_data
+#         }
+#     except Exception as e:
+#         print(f"Error occurred during login: {e}")
+#         raise HTTPException(status_code=500, detail="Internal Server Error")
+>>>>>>> 493faa3514e2f7f7fb67f83f797d018a034e6d79
