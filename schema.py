@@ -1,3 +1,5 @@
+import datetime
+
 #farmer db schema
 def farmer_serial(farmer) -> dict:
     return{
@@ -5,7 +7,7 @@ def farmer_serial(farmer) -> dict:
         "fname":str(farmer["fname"]),
         "mname":str(farmer["mname"]),
         "lname":str(farmer["lname"]),
-        # "field_type":str(farmer["field_type"]),
+        "field_type":str(farmer["field_type"]),
         "dob":str(farmer["dob"]),
         "email":str(farmer["email"]),
         "address":str(farmer["address"]),

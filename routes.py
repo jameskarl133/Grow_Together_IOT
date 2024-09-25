@@ -11,6 +11,7 @@ from server import crop
 from server import crop_log
 from server import notification
 from server import schedule
+from datetime import datetime
 router = APIRouter()
 
 @router.get("/farmer")
@@ -20,12 +21,11 @@ async def get_farmer():
 
 @router.post("/farmer")
 async def post_farmer(frm: Farmer):
-    print('test')
     data = dict(frm)
+    # data = ['created_at'] = datetime.now()
+    # data = ['updated_at'] = datetime.now()
     result = farmer.insert_one(data)
-    return{
-        "code" : 200 if result else 204
-    }
+    return {"code": 200 if result else 204}
 
 @router.get("/crop")
 async def get_crop():
@@ -34,12 +34,9 @@ async def get_crop():
 
 @router.post("/crop")
 async def post_crop(crp: Crop):
-    print('test')
     data = dict(crp)
     result = crop.insert_one(data)
-    return{
-        "code" : 200 if result else 204
-    }
+    return {"code": 200 if result else 204}
 
 @router.get("/crop_log")
 async def get_crop_log():
@@ -48,12 +45,9 @@ async def get_crop_log():
 
 @router.post("/crop_log")
 async def post_crop_log(crp_lg: Crop_Log):
-    print('test')
     data = dict(crp_lg)
     result = crop_log.insert_one(data)
-    return{
-        "code" : 200 if result else 204
-    }
+    return {"code": 200 if result else 204}
 
 @router.get("/notification")
 async def get_notification():
@@ -62,12 +56,9 @@ async def get_notification():
 
 @router.post("/notification")
 async def post_notification(notif: Notification):
-    print('test')
     data = dict(notif)
     result = notification.insert_one(data)
-    return{
-        "code" : 200 if result else 204
-    }
+    return {"code": 200 if result else 204}
 
 @router.get("/schedule")
 async def get_schedule():
@@ -76,31 +67,60 @@ async def get_schedule():
 
 @router.post("/schedule")
 async def post_schedule(sched: Schedule):
-    print('test')
     data = dict(sched)
     result = schedule.insert_one(data)
-    return{
-        "code" : 200 if result else 204
-    }
+    return {"code": 200 if result else 204}
 
 @router.get("/crop/ondb")
 async def get_ondb_crops():
     try:
-        # Filter crops that have the status "ondb"
+        # Fetch crops that have the status "ondb"
         crops = list(crop.find({"crop_status": "ondb"}))
-        serialized_crops = crop_list_serial(crops)  # Use the serialization function
-        return serialized_crops #like ang crop name ra ba
+        serialized_crops = crop_list_serial(crops)
+        return serialized_crops
     except Exception as e:
-        print(f"Error occurred while fetching crops: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
+
+@router.get("/farmer/login")
+async def login_farmer(username: str, password: str):
     
+    result = farmer.find_one({"username": username, "password": password})
+
+    if result:
+        
+        data = {
+            "id": str(result["_id"]),
+            "username": result["username"],
+            
+        }
+    else:
+        
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    
+    return {
+        "access": True,
+        "farmer": data
+    }
+
+
 @router.get("/crop/planted")
 async def get_planted_crops():
     try:
-        # Filter crops that have the status "planted"
         crops = list(crop.find({"crop_status": "planted"}))
-        serialized_crops = crop_list_serial(crops)  # Use the serialization function
-        return serialized_crops  # Return only the crop names
+        if not crops:
+            return []
+        return crop_list_serial(crops)
     except Exception as e:
-        print(f"Error occurred while fetching crops: {e}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/crop/{crop_name}/planted")
+async def update_crop_status(crop_name: str):
+    try:
+        result = crop.update_one({"crop_name": crop_name}, {"$set": {"crop_status": "planted"}})
+        if result.modified_count == 1:
+            return {"message": "Crop status updated to planted"}
+        else:
+            raise HTTPException(status_code=404, detail="Crop not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
