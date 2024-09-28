@@ -71,11 +71,11 @@ async def post_schedule(sched: Schedule):
     result = schedule.insert_one(data)
     return {"code": 200 if result else 204}
 
-@router.get("/crop/ondb")
-async def get_ondb_crops():
+@router.get("/crop/harvested")
+async def get_harvested_crops():
     try:
         # Fetch crops that have the status "ondb"
-        crops = list(crop.find({"crop_status": "ondb"}))
+        crops = list(crop.find({"crop_status": "harvested"}))
         serialized_crops = crop_list_serial(crops)
         return serialized_crops
     except Exception as e:
@@ -111,6 +111,14 @@ async def get_planted_crops():
         if not crops:
             return []
         return crop_list_serial(crops)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/crop/{crop_name}/harvested")
+async def update_crop_harvested(crop_name: str):
+    try:
+        result = crop.update_one({"crop_name": crop_name}, {"$set": {"crop_status": "harvested"}})
+        return {"message": "Crop harvested"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
