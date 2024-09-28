@@ -74,7 +74,6 @@ async def post_schedule(sched: Schedule):
 @router.get("/crop/harvested")
 async def get_harvested_crops():
     try:
-        # Fetch crops that have the status "ondb"
         crops = list(crop.find({"crop_status": "harvested"}))
         serialized_crops = crop_list_serial(crops)
         return serialized_crops
@@ -125,10 +124,26 @@ async def update_crop_harvested(crop_name: str):
 @router.put("/crop/{crop_name}/planted")
 async def update_crop_status(crop_name: str):
     try:
+        # Update the crop status to 'planted'
         result = crop.update_one({"crop_name": crop_name}, {"$set": {"crop_status": "planted"}})
+        
         if result.modified_count == 1:
-            return {"message": "Crop status updated to planted"}
+            # Fetch the updated crop data
+            updated_crop = crop.find_one({"crop_name": crop_name})
+            
+            # Create the crop log entry
+            log_entry = {
+                "crop_name": updated_crop["crop_name"],
+                "crop_date_planted": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),  # Current timestamp as date planted
+                "crop_date_harvested": None,  # Harvest date can be updated later when the crop is harvested
+            }
+            
+            # Insert the log entry into the crop_log collection
+            crop_log.insert_one(log_entry)
+            
+            return {"message": "Crop status updated to planted and log created."}
         else:
             raise HTTPException(status_code=404, detail="Crop not found")
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
