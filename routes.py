@@ -101,7 +101,17 @@ async def login_farmer(username: str, password: str):
         "access": True,
         "farmer": data
     }
+@router.get("/farmer/profile")
+async def view_profile(farmer_id: str):
+    try:
+        result = farmer.find_one({"_id": ObjectId(farmer_id)})
+        if not result:
+            raise HTTPException(status_code=404, detail="Farmer not found")
 
+        data = farmer_serial(result)
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/crop/planted")
 async def get_planted_crops():
