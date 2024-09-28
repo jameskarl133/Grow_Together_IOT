@@ -19,7 +19,7 @@ class Crop(BaseModel):
     crop_name:str
     # crop_image:str
     crop_soil:str
-    crop_soil_desc:str
+    # crop_soil_desc:str
     crop_moisture:str
     crop_temp:str
     crop_status:str
