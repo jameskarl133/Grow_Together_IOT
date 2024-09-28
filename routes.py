@@ -147,3 +147,20 @@ async def update_crop_status(crop_name: str):
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.put("/crop_log/{crop_name}/harvested")
+async def update_crop_log(crop_name: str):
+    try:
+        result = crop_log.update_one(
+            {"crop_name": crop_name},
+            {"$set": {"crop_date_harvested": datetime.now().strftime('%Y-%m-%d %H:%M:%S')}}
+        )
+        
+        # Check if an entry was modified
+        if result.modified_count == 1:
+            return {"message": "Crop log updated with harvest date."}
+        else:
+            return {"message": "No crop log entry found to update."}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
