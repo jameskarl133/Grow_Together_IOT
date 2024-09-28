@@ -2,22 +2,21 @@ import datetime
 
 #farmer db schema
 def farmer_serial(farmer) -> dict:
-    return{
-        "id":str(farmer["_id"]),
-        "fname":str(farmer["fname"]),
-        "mname":str(farmer["mname"]),
-        "lname":str(farmer["lname"]),
-        "field_type":str(farmer["field_type"]),
-        "dob":str(farmer["dob"]),
-        "email":str(farmer["email"]),
-        "address":str(farmer["address"]),
-        "phno":str(farmer["phno"]),
-        "username":str(farmer["username"]),
-        "password":str(farmer["password"]),
-        "status":str(farmer["status"]),
-        # "created_at":str(farmer["created_at"]),
-        # "updated_at":str(farmer["updated_at"]),
-        
+    return {
+        "id": str(farmer["_id"]),
+        "fname": str(farmer["fname"]),
+        "mname": str(farmer["mname"]),
+        "lname": str(farmer["lname"]),
+        "field_type": str(farmer["field_type"]),
+        "dob": str(farmer["dob"]),
+        "email": str(farmer["email"]),
+        "address": str(farmer["address"]),
+        "phno": str(farmer["phno"]),
+        "username": str(farmer["username"]),
+        "password": str(farmer["password"]),
+        "status": str(farmer["status"]),
+        "created_at": str(farmer["created_at"]),
+        "updated_at": str(farmer["updated_at"]),
     }
 
 def farmer_list_serial(farmers) -> list:
@@ -47,7 +46,7 @@ def crop_log_serial(crop_log) -> dict:
     return{
         "crop_date_planted":str(crop_log["crop_date_planted"]),
         "crop_date_harvested":str(crop_log["crop_date_harvested"]),
-        "crop_id":str(crop_log["crop_id"])
+        "crop_name":str(crop_log["crop_name"])
     }
 
 def crop_log_list_serial(crop_logs) -> list:

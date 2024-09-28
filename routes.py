@@ -22,8 +22,8 @@ async def get_farmer():
 @router.post("/farmer")
 async def post_farmer(frm: Farmer):
     data = dict(frm)
-    # data = ['created_at'] = datetime.now()
-    # data = ['updated_at'] = datetime.now()
+    data['created_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    data['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     result = farmer.insert_one(data)
     return {"code": 200 if result else 204}
 

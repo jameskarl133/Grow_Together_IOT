@@ -1,19 +1,19 @@
 from pydantic import BaseModel
 
 class Farmer(BaseModel):
-    fname:str
-    mname:str
-    lname:str
-    field_type:str
-    dob:str
-    email:str
-    address:str
-    phno:str
-    username:str
-    password:str
-    status:str
-    # created_at:str
-    # updated_at:str
+    fname: str
+    mname: str
+    lname: str
+    field_type: str
+    dob: str
+    email: str
+    address: str
+    phno: str
+    username: str
+    password: str
+    status: str
+    created_at: str = None
+    updated_at: str = None
 
 class Crop(BaseModel):
     crop_name:str
@@ -29,7 +29,7 @@ class Crop(BaseModel):
 class Crop_Log(BaseModel):
     crop_date_planted:str
     crop_date_harvested:str
-    crop_id:str
+    crop_name:str
     
 class Notification(BaseModel):
     user_id:str
