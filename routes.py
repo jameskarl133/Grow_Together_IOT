@@ -113,6 +113,21 @@ async def view_profile(farmer_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.put("/farmer/{farmer_id}")
+async def update_farmer(farmer_id: str, updated_data: Farmer):
+    try:
+        result = farmer.update_one(
+            {"_id": ObjectId(farmer_id)},
+            {"$set": updated_data.dict()}
+        )
+        
+        if result.modified_count == 1:
+            return {"message": "Farmer profile updated successfully."}
+        else:
+            raise HTTPException(status_code=404, detail="Farmer not found or no changes made.")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/crop/planted")
 async def get_planted_crops():
     try:

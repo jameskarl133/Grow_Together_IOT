@@ -29,7 +29,7 @@ def crop_serial(crop) -> dict:
         "crop_name":str(crop["crop_name"]),
         # "crop_image":str(crop["image"]),
         "crop_soil":str(crop["crop_soil"]),
-        "crop_soil_desc": str(crop["crop_soil_desc"]),
+        # "crop_soil_desc": str(crop["crop_soil_desc"]),
         "crop_moisture":str(crop["crop_moisture"]),
         "crop_temp":str(crop["crop_temp"]),
         "crop_status":str(crop["crop_status"]),
