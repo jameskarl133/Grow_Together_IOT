@@ -159,7 +159,7 @@ async def update_crop_status(crop_name: str):
             # Create the crop log entry
             log_entry = {
                 "crop_name": updated_crop["crop_name"],
-                "crop_date_planted": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),  # Current timestamp as date planted
+                "crop_date_planted": datetime.now().strftime('%Y-%m-%d %I:%M:%S %p'),  # Current timestamp as date planted
                 "crop_date_harvested": None,  # Harvest date can be updated later when the crop is harvested
             }
             
@@ -176,9 +176,10 @@ async def update_crop_status(crop_name: str):
 @router.put("/crop_log/{crop_name}/harvested")
 async def update_crop_log(crop_name: str):
     try:
+        # Attempt to update the crop log where crop_date_harvested is null
         result = crop_log.update_one(
-            {"crop_name": crop_name},
-            {"$set": {"crop_date_harvested": datetime.now().strftime('%Y-%m-%d %H:%M:%S')}}
+            {"crop_name": crop_name, "crop_date_harvested": None},
+            {"$set": {"crop_date_harvested": datetime.now().strftime('%Y-%m-%d %I:%M:%S %p')}}
         )
         
         # Check if an entry was modified
