@@ -190,3 +190,15 @@ async def update_crop_log(crop_name: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/crop_logs/delete_all")
+async def delete_logs_except_unharvested():
+    try:
+        # Deleting logs where crop_date_harvested is not null
+        result = crop_log.delete_many({"crop_date_harvested": {"$ne": None}})
+        if result.deleted_count > 0:
+            return {"message": f"Deleted {result.deleted_count} logs"}
+        else:
+            return {"message": "No logs to delete"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
