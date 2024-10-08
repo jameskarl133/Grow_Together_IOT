@@ -3,7 +3,7 @@ from models import Crop
 from models import Crop_Log
 from models import Notification
 from models import Schedule
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from bson import ObjectId
 from schema import *
 from server import farmer
@@ -12,7 +12,10 @@ from server import crop_log
 from server import notification
 from server import schedule
 from datetime import datetime
+from websocket import ConnectionManager
+
 router = APIRouter()
+manager = ConnectionManager()
 
 @router.get("/farmer")
 async def get_farmer():
@@ -202,3 +205,16 @@ async def delete_logs_except_unharvested():
             return {"message": "No logs to delete"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            # Broadcast the received data to all active connections
+            await manager.broadcast(f"Broadcasting message: {data}")
+            print(f"Message received and broadcasted: {data}")
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        print("WebSocket disconnected")

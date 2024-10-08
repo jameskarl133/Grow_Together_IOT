@@ -1,12 +1,13 @@
-# all the imports
 from fastapi import FastAPI
 from routes import router
 
-# creating a server with python FastAPI
+# FastAPI app instance
 app = FastAPI()
+
+# Include the routes
 app.include_router(router)
 
-# hello world endpoint
+# Hello World endpoint
 @app.get("/")
-def read_root(): # function that is binded with the endpoint
+def read_root():
     return {"Hello": "World"}
