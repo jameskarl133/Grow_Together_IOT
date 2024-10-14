@@ -213,7 +213,7 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_text()
             # Broadcast the received data to all active connections
-            await manager.broadcast(f"Broadcasting message: {data}")
+            await manager.broadcast(f"{data}")
             print(f"Message received and broadcasted: {data}")
     except WebSocketDisconnect:
         manager.disconnect(websocket)
