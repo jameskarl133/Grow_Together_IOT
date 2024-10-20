@@ -53,9 +53,11 @@ async def post_crop_log(crp_lg: Crop_Log):
     return {"code": 200 if result else 204}
 
 @router.get("/notification")
-async def get_notification():
-    notifications = notification_list_serial(notification.find())
+async def get_notifications():
+    # Fetch all notifications from the collection
+    notifications = list(notification.find({}, {'_id': 0}))  # Exclude the _id field if you don't need it
     return notifications
+
 
 @router.post("/notification")
 async def post_notification(notif: Notification):
@@ -206,15 +208,24 @@ async def delete_logs_except_unharvested():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
+    await websocket.accept()  # Accept WebSocket connection
     try:
         while True:
+            # Receive message from WebSocket
             data = await websocket.receive_text()
-            # Broadcast the received data to all active connections
-            await manager.broadcast(f"{data}")
-            print(f"Message received and broadcasted: {data}")
+            # Save the message to the MongoDB database with a timestamp
+            timestamp = datetime.now().strftime("%I:%M %p")
+            notification.insert_one({
+                "message": data,
+                "timestamp": timestamp
+            })
+            print(f"Message saved to DB: {data} at {timestamp}")
+
+            # Send back the message (or confirmation) to the client
+            await websocket.send_text(f"{data}")
+            
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
         print("WebSocket disconnected")
