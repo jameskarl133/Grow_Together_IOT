@@ -207,6 +207,18 @@ async def delete_logs_except_unharvested():
             return {"message": "No logs to delete"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.delete("/notifications/delete_all")
+async def delete_all_notifications():
+    try:
+        # Delete all notifications from the collection
+        result = notification.delete_many({})
+        if result.deleted_count > 0:
+            return {"message": f"Deleted {result.deleted_count} notifications"}
+        else:
+            return {"message": "No notifications to delete"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.websocket("/ws")
