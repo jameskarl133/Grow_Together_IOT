@@ -13,7 +13,7 @@ from server import notification
 from server import schedule
 from datetime import datetime
 from websocket import ConnectionManager
-
+import json
 router = APIRouter()
 manager = ConnectionManager()
 
@@ -223,21 +223,30 @@ async def delete_all_notifications():
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()  # Accept WebSocket connection
+    await manager.connect(websocket)
     try:
         while True:
-            # Receive message from WebSocket
-            data = await websocket.receive_text()
-            # Save the message to the MongoDB database with a timestamp
+            received = await websocket.receive_text()
             timestamp = datetime.now().strftime("%I:%M %p")
-            notification.insert_one({
-                "message": data,
+            data = {
+                "message": received,
                 "timestamp": timestamp
-            })
-            print(f"Message saved to DB: {data} at {timestamp}")
-
-            # Send back the message (or confirmation) to the client
-            await websocket.send_text(f"{data}")
+            }
+            # Save the message to the MongoDB database with a timestamp
+            res = notification.insert_one(data)
+            print(f"Message saved to DB: {received} at {timestamp}")
             
+            if res:
+                data = {
+                    "message": received,
+                    "timestamp": timestamp
+                }
+                # Broadcast the received data to all active connections
+                print(data)
+                await manager.broadcast(f"{json.dumps(data)}")
+                print(f"Message received and broadcasted: {data}")
+
     except WebSocketDisconnect:
+        manager.disconnect(websocket)  # Remove the client on disconnect
         print("WebSocket disconnected")
+        
