@@ -55,8 +55,8 @@ def crop_log_list_serial(crop_logs) -> list:
 #notification db schema
 def notification_list_serial(notification) -> dict:
     return{
-        "user_id":str(notification["user_id"]),
-        "crop_id":str(notification["crop_id"])
+        "message":str(notification["message"]),
+        "date":str(notification["date"])
     }
 
 def notification_list_serial(notifications) -> list:

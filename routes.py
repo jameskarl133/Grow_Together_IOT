@@ -13,7 +13,7 @@ from server import notification
 from server import schedule
 from datetime import datetime
 from websocket import ConnectionManager
-
+import json
 router = APIRouter()
 manager = ConnectionManager()
 
@@ -53,9 +53,11 @@ async def post_crop_log(crp_lg: Crop_Log):
     return {"code": 200 if result else 204}
 
 @router.get("/notification")
-async def get_notification():
-    notifications = notification_list_serial(notification.find())
+async def get_notifications():
+    # Fetch all notifications from the collection
+    notifications = list(notification.find({}, {'_id': 0}))  # Exclude the _id field if you don't need it
     return notifications
+
 
 @router.post("/notification")
 async def post_notification(notif: Notification):
@@ -205,16 +207,46 @@ async def delete_logs_except_unharvested():
             return {"message": "No logs to delete"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.delete("/notifications/delete_all")
+async def delete_all_notifications():
+    try:
+        # Delete all notifications from the collection
+        result = notification.delete_many({})
+        if result.deleted_count > 0:
+            return {"message": f"Deleted {result.deleted_count} notifications"}
+        else:
+            return {"message": "No notifications to delete"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_text()
-            # Broadcast the received data to all active connections
-            await manager.broadcast(f"{data}")
-            print(f"Message received and broadcasted: {data}")
+            received = await websocket.receive_text()
+            timestamp = datetime.now().strftime("%I:%M %p")
+            data = {
+                "message": received,
+                "timestamp": timestamp
+            }
+            # Save the message to the MongoDB database with a timestamp
+            res = notification.insert_one(data)
+            print(f"Message saved to DB: {received} at {timestamp}")
+            
+            if res:
+                data = {
+                    "message": received,
+                    "timestamp": timestamp
+                }
+                # Broadcast the received data to all active connections
+                print(data)
+                await manager.broadcast(f"{json.dumps(data)}")
+                print(f"Message received and broadcasted: {data}")
+
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        manager.disconnect(websocket)  # Remove the client on disconnect
         print("WebSocket disconnected")
+        

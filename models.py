@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 class Farmer(BaseModel):
     fname: str
@@ -32,8 +33,8 @@ class Crop_Log(BaseModel):
     crop_name:str
     
 class Notification(BaseModel):
-    user_id:str
-    crop_id:str
+    message:str
+    date:str
 
 class Schedule(BaseModel):
     sched_time:str
