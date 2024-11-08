@@ -1,6 +1,7 @@
 from models import Farmer
 from models import Crop
 from models import Crop_Log
+from models import Device
 from models import Notification
 from models import Schedule
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
@@ -8,6 +9,7 @@ from bson import ObjectId
 from schema import *
 from server import farmer
 from server import crop
+from server import device
 from server import crop_log
 from server import notification
 from server import schedule
@@ -40,6 +42,17 @@ async def post_crop(crp: Crop):
     data = dict(crp)
     result = crop.insert_one(data)
     return {"code": 200 if result else 204}
+
+@router.post("/device")
+async def post_dev(dev: Device):
+    data = dict(dev)
+    result = device.insert_one(data)
+    return {"code":200 if result else 204}
+
+@router.get("/device")
+async def get_device():
+    devices = device_list_serial()
+    return devices
 
 @router.get("/crop_log")
 async def get_crop_log():
@@ -234,7 +247,7 @@ async def websocket_endpoint(websocket: WebSocket):
             }
             # Save the message to the MongoDB database with a timestamp
             res = notification.insert_one(data)
-            print(f"Message saved to DB: {received} at {timestamp}")
+            print(f"Message saved to DB: {received} at {timestamp}") 
             
             if res:
                 data = {
@@ -249,4 +262,4 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)  # Remove the client on disconnect
         print("WebSocket disconnected")
-        
+    
