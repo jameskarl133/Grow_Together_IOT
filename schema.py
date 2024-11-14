@@ -72,11 +72,11 @@ def schedule_list_serial(schedules) -> list:
     return[schedule_list_serial(schedule) for schedule in schedules]
 
 def device_serial(device) -> dict:
-    return{
-        "device_name":str(device["device_name"]),
-        "crop_id":str(device["crop_id"]),
-        "mac_ad":str(device["mac_ad"])
+    return {
+        "device_name": str(device["device_name"]),
+        "crop_id": str(device["crop_id"]),
+        "mac_ad": str(device["mac_ad"])
     }
 
 def device_list_serial(devices) -> list:
-    return[device_list_serial(device)for device in devices]
+    return [device_serial(device) for device in devices]

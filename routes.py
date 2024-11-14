@@ -51,8 +51,16 @@ async def post_dev(dev: Device):
 
 @router.get("/device")
 async def get_device():
-    devices = device_list_serial()
-    return devices
+    try:
+        # Fetch all devices from the database
+        devices = device.find()
+        
+        # Serialize the list of devices
+        serialized_devices = device_list_serial(devices)
+        
+        return serialized_devices
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/crop_log")
 async def get_crop_log():
@@ -241,6 +249,8 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             received = await websocket.receive_text()
             timestamp = datetime.now().strftime("%I:%M %p")
+            
+            # json_data = json.loads(received)
             data = {
                 "message": received,
                 "timestamp": timestamp
@@ -258,6 +268,17 @@ async def websocket_endpoint(websocket: WebSocket):
                 print(data)
                 await manager.broadcast(f"{json.dumps(data)}")
                 print(f"Message received and broadcasted: {data}")
+
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)  # Remove the client on disconnect
+        print("WebSocket disconnected")
+        
+@router.websocket("/control")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            received = await websocket.receive_text()
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)  # Remove the client on disconnect
