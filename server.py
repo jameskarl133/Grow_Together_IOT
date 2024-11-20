@@ -16,5 +16,7 @@ except:
 farmer = db['farmer']
 crop = db['crop']
 crop_log = db ['crop_log']
+device = db['device']
 notification = db ['notification']
 schedule = db ['schedule']
+

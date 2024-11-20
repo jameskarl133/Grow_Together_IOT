@@ -38,3 +38,8 @@ class Notification(BaseModel):
 
 class Schedule(BaseModel):
     sched_time:str
+    
+class Device(BaseModel):
+    device_name:str
+    crop_id:str
+    mac_ad:str
