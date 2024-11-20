@@ -4,6 +4,8 @@ from models import Crop_Log
 from models import Device
 from models import Notification
 from models import Schedule
+from models import VerifyAnswerRequest
+from models import PasswordUpdateRequest
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from bson import ObjectId
 from schema import *
@@ -337,4 +339,39 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         manager.disconnect(websocket)  # Remove the client on disconnect
         print("WebSocket disconnected")
+
+@router.get("/farmer/forgot-password/verify")
+async def verify_username(username: str):
+    print(f"Checking for user: {username}")  # Log the incoming username
+    user = farmer.find_one({"username": username})
+    if user:
+        return {"question": user.get("security_question", "Default question")}
+    else:
+        raise HTTPException(status_code=404, detail="Username not found")
+
+@router.post("/farmer/forgot-password/verify_answer")
+async def verify_security_answer(request: VerifyAnswerRequest):
+    user = farmer.find_one({"username": request.username})
+    if user:
+        correct_answer = user.get("security_answer", "")
+        if correct_answer == request.answer:
+            return {"success": True, "password": user.get("password")}
+        else:
+            raise HTTPException(status_code=400, detail="Incorrect answer")
+    else:
+        raise HTTPException(status_code=404, detail="Username not found")
+    
+@router.put("/update_password")
+async def update_password(request: PasswordUpdateRequest):
+    # Check if user exists
+    user = farmer.find_one({"username": request.username})
+    if user:
+        # Update the password in the database
+        farmer.update_one(
+            {"username": request.username},
+            {"$set": {"password": request.new_password}}  # Update password field
+        )
+        return {"message": "Password updated successfully!"}
+    else:
+        raise HTTPException(status_code=404, detail="Username not found")
     
