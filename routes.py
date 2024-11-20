@@ -46,8 +46,20 @@ async def post_crop(crp: Crop):
 @router.post("/device")
 async def post_dev(dev: Device):
     data = dict(dev)
+    
+    crop_data = crop_list_serial(crop.find())
+    
+    print(crop_data)
+    
+    for cropd in crop_data:
+        print(cropd)
+        if str(cropd['id']) in data['crop_id']:
+            data['crop_id'] = str(cropd['id'])
+            break
+            
     result = device.insert_one(data)
-    return {"code":200 if result else 204}
+    return {"code":200 if result else 204,
+            "id": str(result.inserted_id)}
 
 @router.get("/device")
 async def get_device():
@@ -61,11 +73,27 @@ async def get_device():
         return serialized_devices
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.get("/find_device")
+async def get_device_by_id(id: str):
+    try:
+        # Find the device by its ID
+        device_data = device.find_one({"_id": ObjectId(id)})
+
+        if device_data:
+            # Serialize the device data
+            serialized_device = device_serial(device_data)
+            return serialized_device
+        else:
+            raise HTTPException(status_code=404, detail="Device not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/crop_log")
 async def get_crop_log():
     crop_logs = crop_log_list_serial(crop_log.find())
     return crop_logs
+
 
 @router.post("/crop_log")
 async def post_crop_log(crp_lg: Crop_Log):
@@ -240,6 +268,17 @@ async def delete_all_notifications():
             return {"message": "No notifications to delete"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.delete("/device/delete_all")
+async def delete_device():
+    try:
+        result = device.delete_many({})
+        if result.deleted_count:
+            return {"message": f"Deleted {result.deleted_count} devices"}
+        else:
+            return {"message": "No devices to delete"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.websocket("/ws")
@@ -248,6 +287,7 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             received = await websocket.receive_text()
+            
             timestamp = datetime.now().strftime("%I:%M %p")
             
             # json_data = json.loads(received)
@@ -255,30 +295,44 @@ async def websocket_endpoint(websocket: WebSocket):
                 "message": received,
                 "timestamp": timestamp
             }
-            # Save the message to the MongoDB database with a timestamp
-            res = notification.insert_one(data)
-            print(f"Message saved to DB: {received} at {timestamp}") 
             
-            if res:
-                data = {
-                    "message": received,
-                    "timestamp": timestamp
-                }
-                # Broadcast the received data to all active connections
-                print(data)
-                await manager.broadcast(f"{json.dumps(data)}")
-                print(f"Message received and broadcasted: {data}")
+            # print(data["message"])
+            try:
+                sensor = json.loads(data["message"])
+                # print(sensor["water_level"])
+                
+                if sensor["water_level"] == "Low":
+                    notification.insert_one(data)
+                    print(f"Message saved to DB: {received} at {timestamp}")
+                elif sensor["soil_moisture"] >= 3000:
+                    notification.insert_one(data)
+                    print(f"Message saved to DB: {received} at {timestamp}")
+            except json.JSONDecodeError:
+                pass
+                
+            # if res:
+            data = {
+                "message": received,
+                "timestamp": timestamp
+            }
+            # Broadcast the received data to all active connections
+            print(data)
+            await manager.broadcast(f"{json.dumps(data)}")
+            print(f"Message received and broadcasted: {data}")
+            
+            
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)  # Remove the client on disconnect
         print("WebSocket disconnected")
         
-@router.websocket("/control")
+@router.websocket("/link")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
             received = await websocket.receive_text()
+            await manager.broadcast(received)
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)  # Remove the client on disconnect
