@@ -5,7 +5,7 @@ def farmer_serial(farmer) -> dict:
     return {
         "id": str(farmer["_id"]),
         "fname": str(farmer["fname"]),
-        "mname": str(farmer["mname"]),
+        "mname": str(farmer.get("mname", "")),
         "lname": str(farmer["lname"]),
         "field_type": str(farmer["field_type"]),
         "dob": str(farmer["dob"]),
@@ -15,8 +15,10 @@ def farmer_serial(farmer) -> dict:
         "username": str(farmer["username"]),
         "password": str(farmer["password"]),
         "status": str(farmer["status"]),
-        "created_at": str(farmer["created_at"]),
-        "updated_at": str(farmer["updated_at"]),
+        "security_question": str(farmer["security_question"]),  # Add this field
+        "security_answer": str(farmer["security_answer"]),  # Add this field
+        "created_at": str(farmer.get("created_at", "")),
+        "updated_at": str(farmer.get("updated_at", ""))
     }
 
 def farmer_list_serial(farmers) -> list:
