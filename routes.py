@@ -286,6 +286,8 @@ async def delete_device():
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
+    water_low = False
+    soil_low = False
     try:
         while True:
             received = await websocket.receive_text()
@@ -303,20 +305,27 @@ async def websocket_endpoint(websocket: WebSocket):
                 sensor = json.loads(data["message"])
                 # print(sensor["water_level"])
                 
-                if sensor["water_level"] == "Low":
+                if sensor["water_level"] == "Low" and not water_low:
+                    water_low = True
                     low_water_message = {
                         "message": "Low water level",
                         "timestamp": timestamp
                     }
                     notification.insert_one(low_water_message)
                     print(f"Message saved to DB: {received} at {timestamp}")
-                elif sensor["soil_moisture"] >= 3000:
+                elif sensor["water_level"] == "Normal" and water_low:
+                    water_low = False
+                    
+                if sensor["soil_moisture"] >= 3000 and not soil_low:
+                    soil_low = True
                     low_soil_message= {
                         "message": "Low soil moisture",
                         "timestamp": timestamp
                     }
                     notification.insert_one(low_soil_message)
                     print(f"Message saved to DB: {received} at {timestamp}")
+                elif sensor["soil_moisture"] < 3000 and soil_low:
+                    soil_low = False
             except json.JSONDecodeError:
                 pass
                 
