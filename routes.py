@@ -304,10 +304,18 @@ async def websocket_endpoint(websocket: WebSocket):
                 # print(sensor["water_level"])
                 
                 if sensor["water_level"] == "Low":
-                    notification.insert_one(data)
+                    low_water_message = {
+                        "message": "Low water level",
+                        "timestamp": timestamp
+                    }
+                    notification.insert_one(low_water_message)
                     print(f"Message saved to DB: {received} at {timestamp}")
                 elif sensor["soil_moisture"] >= 3000:
-                    notification.insert_one(data)
+                    low_soil_message= {
+                        "message": "Low soil moisture",
+                        "timestamp": timestamp
+                    }
+                    notification.insert_one(low_soil_message)
                     print(f"Message saved to DB: {received} at {timestamp}")
             except json.JSONDecodeError:
                 pass
