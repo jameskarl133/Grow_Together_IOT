@@ -35,6 +35,8 @@ def crop_serial(crop) -> dict:
         "crop_moisture":str(crop["crop_moisture"]),
         "crop_temp":str(crop["crop_temp"]),
         "crop_status":str(crop["crop_status"]),
+        "crop_estdate":str(crop["crop_estdate"]),
+        # "crop_days_grown":str(crop["crop_days_grown"])
         # "crop_created_at":str(crop["crop_created_at"]),
         # "crop_updated_at":str(crop["crop_updated_at"]),
         
