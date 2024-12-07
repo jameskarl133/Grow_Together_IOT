@@ -34,6 +34,8 @@ class Crop(BaseModel):
     crop_moisture:str
     crop_temp:str
     crop_status:str
+    crop_estdate:str
+    # crop_days_grown:str
     # crop_created_at:str
     # crop_updated_at:str
 
