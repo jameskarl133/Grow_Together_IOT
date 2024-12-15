@@ -9,7 +9,7 @@ def farmer_serial(farmer) -> dict:
         "lname": str(farmer["lname"]),
         "field_type": str(farmer["field_type"]),
         "dob": str(farmer["dob"]),
-        "email": str(farmer["email"]),
+        # "email": str(farmer["email"]),
         "address": str(farmer["address"]),
         "phno": str(farmer["phno"]),
         "username": str(farmer["username"]),
